@@ -1,25 +1,46 @@
-const express = require('express')
-const logger = require('morgan')
-const cors = require('cors')
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const morgan = require("morgan");
 
-const contactsRouter = require('./routes/api/contacts')
+dotenv.config({ path: "./.env" });
 
-const app = express()
+const contactsRouter = require("./routes/api/contactsRouter");
 
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+// initialize application
+const app = express();
 
-app.use(logger(formatsLogger))
-app.use(cors())
-app.use(express.json())
+// // коли робимо запит на сервер, в консолі відображається інформація про запит
+// if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
-app.use('/api/contacts', contactsRouter)
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+app.use(morgan(formatsLogger));
 
-app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' })
-})
+// cors middleware
+app.use(cors());
+
+// parse request body
+app.use(express.json());
+
+// Global middleware
+app.use((req, res, next) => {
+  req.time = new Date().toLocaleString("uk-UA");
+
+  next();
+});
+
+app.use("/api/contacts", contactsRouter);
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message })
-})
+  res.status(err.status || 500).json({
+    msg: err.message,
+  });
+});
 
-module.exports = app
+app.all("*", (req, res) => {
+  res.status(404).json({
+    msg: "Oops, resource not found...",
+  });
+});
+
+module.exports = app;
