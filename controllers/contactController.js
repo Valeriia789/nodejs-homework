@@ -1,32 +1,10 @@
-const fs = require("fs").promises;
-const uuid = require("uuid").v4;
+const { catchAsync } = require("../utils");
+const Contact = require("../models/contactModel");
 
-const {
-  catchAsync,
-  AppError,
-  createContactDataValidator,
-} = require("../utils");
+exports.addContact = catchAsync(async (req, res) => {
+  const newContact = await Contact.create(req.body);
 
-exports.addContact = catchAsync(async (req, res, next) => {
-  const { error, value } = createContactDataValidator(req.body);
-
-  if (error) return next(new AppError(400, error.details[0].message));
-
-  const { name, email, phone } = value;
-
-  const dataFromDB = await fs.readFile("./models/contacts.json");
-  const contacts = JSON.parse(dataFromDB);
-
-  const newContact = {
-    id: uuid(),
-    name,
-    email,
-    phone,
-  };
-
-  contacts.push(newContact);
-
-  await fs.writeFile("./models/contacts.json", JSON.stringify(contacts));
+  newContact.password = undefined;
 
   res.status(201).json({
     contact: newContact,
@@ -34,69 +12,70 @@ exports.addContact = catchAsync(async (req, res, next) => {
 });
 
 exports.listContacts = catchAsync(async (req, res) => {
-  const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
+  // приклад:
+  // const contacts = await Contact.find().select('name email phone')
+  // const contacts = await Contact.find().select('+password')
+  // const contacts = await Contact.find({"name": "Alina"}).select("-__v");
+  const contacts = await Contact.find().select("-__v");
 
   res.status(200).json({
     contacts,
   });
 });
 
-exports.getContactById = async (req, res) => {
-  // const { id } = req.params;
+exports.getContactById = catchAsync(async (req, res) => {
+  const { id } = req.params;
 
-  // const dataFromDB = await fs.readFile("./models/contacts.json");
-  // const contacts = JSON.parse(dataFromDB);
-  // const contact = contacts.find((item) => item.id === id);
+  const contact = await Contact.findById(id).select("+password");
 
-  const { contact } = req;
+  // // перевіряємо пароль:
+  // const passwordIsValid = await contact.checkPassword(
+  //   "Pass1234",
+  //   contact.password
+  // );
+  // console.log(passwordIsValid);
 
   res.status(200).json({
     contact,
   });
-};
-
-exports.removeContact = catchAsync(async (req, res) => {
-  const { id } = req.params;
-
-  const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
-
-  const updatedListContacts = contacts.filter((item) => item.id !== id);
-
-  await fs.writeFile(
-    "./models/contacts.json",
-    JSON.stringify(updatedListContacts)
-  );
-
-  res.sendStatus(204);
 });
 
 exports.updateContactById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
+  // повертає старий об'єкт, але в базі записується оновлений
+  // const updatedContact = await Contact.findByIdAndUpdate(id, { name: req.body.name })
 
-  const contacts = JSON.parse(await fs.readFile("./models/contacts.json"));
-
-  const contactToUpdate = contacts.find((item) => item.id === id);
-
-  if (name) {
-    contactToUpdate.name = name;
-  }
-
-  if (email) {
-    contactToUpdate.email = email;
-  }
-
-  if (phone) {
-    contactToUpdate.phone = phone;
-  }
-
-  const contactIndex = contacts.findIndex((item) => item.id === id);
-
-  contacts[contactIndex] = contactToUpdate;
-
-  await fs.writeFile("./models/contacts.json", JSON.stringify(contacts));
+  const updatedContact = await Contact.findByIdAndUpdate(
+    id,
+    { name, email, phone },
+    { new: true }
+  );
 
   res.status(200).json({
-    contactToUpdate,
+    updatedContact,
   });
+});
+
+exports.updateStatusContact = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { favorite } = req.body;
+
+  const updatedContact = await Contact.findByIdAndUpdate(
+    id,
+    { favorite },
+    { new: true }
+  );
+
+  res.status(200).json({
+    updatedContact,
+  });
+});
+
+exports.removeContact = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  await Contact.findByIdAndDelete(id);
+
+  res.sendStatus(204);
 });
