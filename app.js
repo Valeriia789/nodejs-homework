@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
 
 dotenv.config({ path: "./.env" });
 
@@ -15,6 +16,18 @@ const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(morgan(formatsLogger));
+
+mongoose
+  .connect(process.env.MONGO_URL)
+  .then((connection) => {
+    console.log("Database connection successful :)");
+  })
+  .catch((error) => {
+    console.log(error);
+
+    // (якщо код не 0, це означає, що щось не так); 1 - сервер повернув помилку, цю помилку ми логаємо
+    process.exit(1);
+  });
 
 // cors middleware
 app.use(cors());
@@ -32,8 +45,11 @@ app.use((req, res, next) => {
 app.use("/api/contacts", contactsRouter);
 
 app.use((err, req, res, next) => {
+  const msg = Array.isArray(err.message) ? err.message.join(";") : err.message;
+
   res.status(err.status || 500).json({
-    msg: err.message,
+    msg,
+    stack: err.stack,
   });
 });
 
