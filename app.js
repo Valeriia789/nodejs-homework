@@ -7,7 +7,8 @@ const mongoose = require("mongoose");
 dotenv.config({ path: "./.env" });
 
 const contactsRouter = require("./routes/api/contactsRouter");
-const usersRouter = require('./routes/api/usersRouter')
+const authRouter = require("./routes/api/authRouter");
+const usersRouter = require("./routes/api/usersRouter");
 
 // initialize application
 const app = express();
@@ -36,6 +37,9 @@ app.use(cors());
 // parse request body
 app.use(express.json());
 
+// Serve static files
+app.use(express.static('public'))
+
 // Global middleware
 app.use((req, res, next) => {
   req.time = new Date().toLocaleString("uk-UA");
@@ -44,6 +48,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/contacts", contactsRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 
 app.use((err, req, res, next) => {

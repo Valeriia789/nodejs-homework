@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const crypto = require('crypto')
 
 const userSubscriptionsEnum = require("../constants/userSubscriptionsEnum");
 const userRolesEnum = require("../constants/userRolesEnum");
@@ -18,6 +19,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
+    // avatarURL: {
+    //   type: String,
+    //   default: 'default-avatar.jpg'
+    // },
+    avatarURL: String,
     subscription: {
       type: String,
       enum: Object.values(userSubscriptionsEnum),
@@ -35,8 +41,17 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Pre save hook // працює на create і save
+// pre save хук відпрацьовує в двох випадках: коли робимо кріейт і коли апдейт
+// обов'язково треба писати function, якщо написати через стрілку, не буде відпрацьовувати
 userSchema.pre("save", async function (next) {
+  // якщо нам потрібно, щоб відпрацьовував тільки на кріейт, робимо перевірку:
+  // в даному випадку this - це поточний юзер
+  if(this.isNew) {
+    const emailHash = crypto.createHash('md5').update(this.email).digest('hex');
+
+    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=robohash`
+  }
+
   if (!this.isModified("password")) return next();
 
   const salt = await bcrypt.genSalt(10);
