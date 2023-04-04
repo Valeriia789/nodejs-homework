@@ -3,14 +3,15 @@ const { Router } = require("express");
 const {
   checkRegistrationUserData,
   protect,
-} = require("../../middlewares/users");
+} = require("../../middlewares/auth");
 
 const {
   registerNewUser,
   login,
-  getCurrentUser,
   logout,
-} = require("../../controllers/users");
+} = require("../../controllers/auth");
+
+const { getCurrentUser } = require('../../controllers/users')
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 const { Router } = require("express");
 const userRolesEnum = require("../../constants/userRolesEnum");
-const { protect, allowForRoles } = require("../../middlewares/users");
+const { protect, allowForRoles } = require("../../middlewares/auth");
 
 const {
   checkContactId,
