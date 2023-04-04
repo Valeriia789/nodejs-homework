@@ -1,48 +1,47 @@
 const { Router } = require("express");
+const userRolesEnum = require("../../constants/userRolesEnum");
+const { protect, allowForRoles } = require("../../middlewares/users");
+
+const {
+  checkContactId,
+  checkContactData,
+} = require("../../middlewares/contacts");
 
 const {
   addContact,
   listContacts,
   getContactById,
   updateContactById,
+  updateContactStatus,
   removeContact,
-  updateStatusContact,
-} = require("../../controllers/contactController");
-
-const {
-  checkContactId,
-  checkCreateContactData,
-  checkUpdateContactData,
-  checkUpdateStatusContact,
-} = require("../../middlewares/contactMiddleware");
+} = require("../../controllers/contacts");
 
 const router = Router();
 
-router
-  .route("/")
-  .post(checkCreateContactData, addContact)
-  .get(listContacts);
+// the routes below are allowed only for logged in users
+router.use(protect);
+
+// the routes below are for specific user roles only
+router.use(
+  allowForRoles(
+    userRolesEnum.USER,
+    userRolesEnum.ADMIN,
+    userRolesEnum.MODERATOR
+  )
+);
+
+router.route("/").post(checkContactData, addContact).get(listContacts);
 
 router.use("/:id", checkContactId);
 
 router
   .route("/:id")
   .get(getContactById)
-  .put(checkUpdateContactData, updateContactById)
+  .put(checkContactData, updateContactById)
   .delete(removeContact);
 
 router.use("/:id/favorite", checkContactId);
 
-router
-  .route("/:id/favorite")
-  .patch(checkUpdateStatusContact, updateStatusContact);
-
-// // альтернативний синтаксис, як користуватись роутами
-
-// router.post("/", checkCreateContactData, addContact);
-// router.get("/", listContacts);
-// router.get("/:id", checkContactId, getContactById);
-// router.delete("/:id", checkContactId, removeContact);
-// router.put("/:id", checkContactId, updateContactById);
+router.route("/:id/favorite").patch(checkContactData, updateContactStatus);
 
 module.exports = router;

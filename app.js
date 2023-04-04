@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 dotenv.config({ path: "./.env" });
 
 const contactsRouter = require("./routes/api/contactsRouter");
+const usersRouter = require('./routes/api/usersRouter')
 
 // initialize application
 const app = express();
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/contacts", contactsRouter);
+app.use("/api/users", usersRouter);
 
 app.use((err, req, res, next) => {
   const msg = Array.isArray(err.message) ? err.message.join(";") : err.message;
@@ -55,7 +57,7 @@ app.use((err, req, res, next) => {
 
 app.all("*", (req, res) => {
   res.status(404).json({
-    msg: "Oops, resource not found...",
+    msg: "Oops, resource not found :[...",
   });
 });
 
