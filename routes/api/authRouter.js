@@ -5,11 +5,7 @@ const {
   protect,
 } = require("../../middlewares/auth");
 
-const {
-  registerNewUser,
-  login,
-  logout,
-} = require("../../controllers/auth");
+const { registerNewUser, login, logout } = require("../../controllers/auth");
 
 const router = Router();
 

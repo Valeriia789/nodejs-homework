@@ -1,8 +1,11 @@
 const { Router } = require("express");
 
 const { protect } = require("../../middlewares/auth");
-const {uploadUserPhoto} = require('../../middlewares/users')
-const { getCurrentUser, updateCurrentUser } = require("../../controllers/users");
+const { uploadUserPhoto } = require("../../middlewares/users");
+const {
+  getCurrentUser,
+  updateCurrentUser,
+} = require("../../controllers/users");
 
 const router = Router();
 
@@ -11,6 +14,6 @@ router.use(protect);
 
 // хто залогінений, той через цей метод отримає СЕБЕ
 router.get("/current", getCurrentUser);
-router.patch('/avatars', uploadUserPhoto, updateCurrentUser)
+router.patch("/avatars", uploadUserPhoto, updateCurrentUser);
 
 module.exports = router;

@@ -1,3 +1,3 @@
-const uploadUserPhoto = require('./uploadUserPhoto')
+const uploadUserPhoto = require("./uploadUserPhoto");
 
-module.exports = uploadUserPhoto
+module.exports = uploadUserPhoto;

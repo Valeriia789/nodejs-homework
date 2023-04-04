@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const crypto = require('crypto')
+const crypto = require("crypto");
 
 const userSubscriptionsEnum = require("../constants/userSubscriptionsEnum");
 const userRolesEnum = require("../constants/userRolesEnum");
@@ -46,10 +46,10 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   // якщо нам потрібно, щоб відпрацьовував тільки на кріейт, робимо перевірку:
   // в даному випадку this - це поточний юзер
-  if(this.isNew) {
-    const emailHash = crypto.createHash('md5').update(this.email).digest('hex');
+  if (this.isNew) {
+    const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
 
-    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=robohash`
+    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=robohash`;
   }
 
   if (!this.isModified("password")) return next();
