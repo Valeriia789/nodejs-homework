@@ -1,3 +1,4 @@
 const uploadUserPhoto = require("./uploadUserPhoto");
+const checkPassword = require('./checkPassword')
 
-module.exports = uploadUserPhoto;
+module.exports = {uploadUserPhoto, checkPassword};

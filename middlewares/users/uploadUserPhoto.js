@@ -1,9 +1,9 @@
 const ImageService = require("../../services/imageService");
 
 // рефактор попередньої мідлвари, (для цього треба написати сервіс)
-exports.uploadUserPhoto = ImageService.upload('avatarURL')
+const uploadUserPhoto = ImageService.upload("avatarURL");
 
-
+module.exports = uploadUserPhoto;
 
 // // До рефакторингу, не можна перевикористати:
 
@@ -24,7 +24,7 @@ exports.uploadUserPhoto = ImageService.upload('avatarURL')
 //   filename: (req, file, callbackFn) => {
 //     // генеруємо унікальне ім'я файлу:
 //     // ext - розширення файлу, витягаємо його з середини самого файлу, а не беремо те, що юзер сам прописав в імені файлу
-//     const ext = file.mimetype.split('/')[1]; 
+//     const ext = file.mimetype.split('/')[1];
 
 //     // до отриманої рандомної строки додаємо ще id юзера
 //     callbackFn(null, `${req.user.id}-${uuid()}.${ext}`)
