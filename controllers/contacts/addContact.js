@@ -1,4 +1,4 @@
-const { catchAsync } = require("../../utils");
+const { catchAsync, contactNamesHandler } = require("../../utils");
 const Contact = require("../../models/contactModel");
 
 const addContact = catchAsync(async (req, res) => {
@@ -6,7 +6,7 @@ const addContact = catchAsync(async (req, res) => {
 
   const newContactData = {
     owner: req.user,
-    name,
+    name: contactNamesHandler(name),
     email,
     phone,
     favorite,
