@@ -1,8 +1,9 @@
 const multer = require("multer");
-const sharp = require("sharp");
+const jimp = require('jimp');
 const path = require("path");
 const uuid = require("uuid").v4;
-const fse = require("fs-extra");
+// const sharp = require("sharp");
+// const fse = require("fs-extra");
 
 const { AppError } = require("../utils");
 
@@ -36,12 +37,20 @@ class ImageService {
     // cwd - current working directory
     const fullFilePath = path.join(process.cwd(), "public", ...pathSegments);
 
-    await fse.ensureDir(fullFilePath);
-    await sharp(file.buffer)
-      .resize(options || { height: 500, width: 500 })
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
-      .toFile(path.join(fullFilePath, fileName));
+    // -------------- using jimp --------------
+    const avatar = await jimp.read(file.buffer);
+    await avatar
+      .cover(500, 500)
+      .quality(90)
+      .writeAsync(path.join(fullFilePath, fileName));
+
+    // -------------- using sharp --------------
+    // await fse.ensureDir(fullFilePath);
+    // await sharp(file.buffer)
+    //   .resize(options || { height: 500, width: 500 })
+    //   .toFormat("jpeg")
+    //   .jpeg({ quality: 90 })
+    //   .toFile(path.join(fullFilePath, fileName));
 
     return path.join(...pathSegments, fileName);
     // файлова структура буде виглядати так: public/avatars/users/<userID>/<random>.jpeg
@@ -49,11 +58,3 @@ class ImageService {
 }
 
 module.exports = ImageService;
-
-
-// Привіт! Хто питався на занятті про jimp.. такий варіант в мене працює адекватно:
-// const avatar = await jimp.read(file.buffer);
-// await avatar
-//   .cover(500, 500)
-//   .quality(90)
-//   .writeAsync(filePath);
