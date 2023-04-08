@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -9,6 +10,7 @@ dotenv.config({ path: "./.env" });
 const contactsRouter = require("./routes/api/contactsRouter");
 const authRouter = require("./routes/api/authRouter");
 const usersRouter = require("./routes/api/usersRouter");
+const viewsRouter = require("./routes/api/viewsRouter");
 
 // initialize application
 const app = express();
@@ -18,6 +20,9 @@ const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(morgan(formatsLogger));
+
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -38,7 +43,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files
-app.use(express.static('public'))
+app.use(express.static("public"));
 
 // Global middleware
 app.use((req, res, next) => {
@@ -47,6 +52,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/", viewsRouter);
 app.use("/api/contacts", contactsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);

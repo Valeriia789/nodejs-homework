@@ -9,7 +9,7 @@ exports.updateCurrentUser = catchAsync(async (req, res) => {
   if (file) {
     user.avatarURL = await ImageService.save(
       file,
-      { height: 400, width: 300 },
+      { height: 250, width: 250 },
       "avatars",
       "users",
       user.id

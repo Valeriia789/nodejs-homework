@@ -1,0 +1,17 @@
+extends layouts/main
+
+block content 
+  h1 My contacts
+  .contacts 
+    each contact in contacts 
+      .contact
+        .owner 
+          figure.owner__pic 
+            img(src= contact.owner.avatarURL)
+          p.owner__email= contact.owner.email
+        .contact__info 
+          h3= contact.name 
+          p.phone= contact.phone 
+          p.description= contact.desk
+
+

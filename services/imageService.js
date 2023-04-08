@@ -3,6 +3,7 @@ const sharp = require("sharp");
 const path = require("path");
 const uuid = require("uuid").v4;
 const fse = require("fs-extra");
+
 const { AppError } = require("../utils");
 
 class ImageService {
@@ -48,3 +49,11 @@ class ImageService {
 }
 
 module.exports = ImageService;
+
+
+// Привіт! Хто питався на занятті про jimp.. такий варіант в мене працює адекватно:
+// const avatar = await jimp.read(file.buffer);
+// await avatar
+//   .cover(500, 500)
+//   .quality(90)
+//   .writeAsync(filePath);
