@@ -40,14 +40,14 @@ class ImageService {
     // -------------- using jimp --------------
     const avatar = await jimp.read(file.buffer);
     await avatar
-      .cover(500, 500)
+      .cover(250, 250)
       .quality(90)
       .writeAsync(path.join(fullFilePath, fileName));
 
     // -------------- using sharp --------------
     // await fse.ensureDir(fullFilePath);
     // await sharp(file.buffer)
-    //   .resize(options || { height: 500, width: 500 })
+    //   .resize(options || { height: 250, width: 250 })
     //   .toFormat("jpeg")
     //   .jpeg({ quality: 90 })
     //   .toFile(path.join(fullFilePath, fileName));
