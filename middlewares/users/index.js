@@ -1,9 +1,4 @@
-const checkRegistrationUserData = require('./checkRegistrationUserData')
-const protect = require('./protect')
-const allowForRoles = require('./allowForRoles')
+const uploadUserPhoto = require("./uploadUserPhoto");
+const checkPassword = require('./checkPassword')
 
-module.exports = {
-  checkRegistrationUserData,
-  protect,
-  allowForRoles,
-}
+module.exports = {uploadUserPhoto, checkPassword};

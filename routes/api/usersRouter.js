@@ -1,29 +1,21 @@
 const { Router } = require("express");
 
+const { protect } = require("../../middlewares/auth");
+const { uploadUserPhoto, checkPassword } = require("../../middlewares/users");
 const {
-  checkRegistrationUserData,
-  protect,
-} = require("../../middlewares/users");
-
-const {
-  registerNewUser,
-  login,
   getCurrentUser,
-  logout,
+  updateCurrentUser,
+  updateMyPassword,
 } = require("../../controllers/users");
 
 const router = Router();
-
-router.post("/register", checkRegistrationUserData, registerNewUser);
-
-router.post("/login", login);
 
 // the routes below are allowed only for logged in users
 router.use(protect);
 
 // хто залогінений, той через цей метод отримає СЕБЕ
 router.get("/current", getCurrentUser);
-
-router.post("/logout", logout);
+router.patch("/avatars", uploadUserPhoto, updateCurrentUser);
+router.patch('/update-my-password', checkPassword, updateMyPassword)
 
 module.exports = router;

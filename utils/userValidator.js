@@ -12,5 +12,6 @@ exports.registerUserDataValidator = (data) =>
       password: Joi.string().regex(PASSWORD_REGEX).required(),
       role: Joi.string().valid(...Object.values(userRolesEnum)),
       subscription: Joi.string().valid(...Object.values(userSubscriptionsEnum)),
+      avatarURL: Joi.string(),
     })
     .validate(data);
