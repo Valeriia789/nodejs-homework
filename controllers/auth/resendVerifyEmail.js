@@ -13,10 +13,10 @@ exports.resendVerifyEmail = catchAsync(async (req, res) => {
 
   await new Email(
     user,
-    `localhost:3000/api/users/verify`
+    `localhost:3000/api/users/verify/${user.verificationToken}`
   ).sendVerificationEmail();
 
   res.status(200).json({
-    message: "Verification successful",
+    message: "Verification instructions sent to your email",
   });
 });
