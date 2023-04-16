@@ -7,21 +7,15 @@ const {
 
 const {
   registerNewUser,
-  verifyEmail,
   login,
   logout,
   forgotPassword,
   resetPassword,
-  // resendVerifyEmail,
 } = require("../../controllers/auth");
 
 const router = Router();
 
 router.post("/register", checkRegistrationUserData, registerNewUser);
-
-router.get("/verify/:verificationToken", verifyEmail);
-
-// router.post("/verify", resendVerifyEmail);
 
 router.post("/login", login);
 

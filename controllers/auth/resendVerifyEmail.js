@@ -1,24 +1,25 @@
-// const User = require("../../models/userModel");
-// const { catchAsync, AppError } = require("../../utils");
+const User = require("../../models/userModel");
+const { Email } = require("../../services");
+const { catchAsync, AppError } = require("../../utils");
 
-// exports.resendVerifyEmail = catchAsync(async(req, res) => {
-//   const {email} = req.body
+exports.resendVerifyEmail = catchAsync(async (req, res) => {
+  const { email } = req.body;
 
-//   const user = await User.findOne({email})
+  const user = await User.findOne({ email });
 
-//   if (!user) return new AppError(401, 'Email not found')
+  if (!user) return new AppError(401, "Email not found");
 
-//   if (user.verify) return new AppError(401, 'Email already verify')
+  if (user.verify) return new AppError(401, "Email already verify");
 
+  await new Email(
+    user,
+    `localhost:3000/api/users/verify`
+  ).sendVerificationEmail();
+
+  user.verify = true
+  user.save()
   
-//   // const verifyEmail = {
-//   //   to: email,
-//   //   html: `<a target="_blank" href="${process.env.BASE_URL}/api/auth/verify/${user.verificationToken}">Click to verify</a>"`
-//   // }
-
-//   // await sendEmail(verifyEmail)
-
-//   res.status(200).json({
-//     message: 'Verification successful'
-//   });
-// })
+  res.status(200).json({
+    message: "Verification successful",
+  });
+});
