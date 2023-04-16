@@ -8,10 +8,10 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
 
   if (!user) return next(new AppError(404, "User not found"));
 
-  user.verificationToken = null;
-  user.verify = true;
-
-  await user.save();
+  await User.findByIdAndUpdate(user._id, {
+    verificationToken: "",
+    verify: true,
+  });
 
   res.status(200).json({
     message: "Verification successful",

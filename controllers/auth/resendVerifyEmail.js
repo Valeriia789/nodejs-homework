@@ -16,9 +16,6 @@ exports.resendVerifyEmail = catchAsync(async (req, res) => {
     `localhost:3000/api/users/verify`
   ).sendVerificationEmail();
 
-  user.verify = true
-  user.save()
-  
   res.status(200).json({
     message: "Verification successful",
   });
