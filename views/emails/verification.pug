@@ -4,7 +4,7 @@ extends layout/base
 
 block content
   p Hi #{name}!!
-  p Sometimes you just want to send a simple HTML email with a simple design and clear call to action. This is it.
+  p To verify your email click the link 
   table.btn.btn-primary(role="presentation", border="0", cellpadding="0", cellspacing="0")
     tbody
       tr
@@ -14,7 +14,7 @@ block content
               tr
                 td
                   a(href=`${url}`, target="_blank") Call To Action
-  p I hope you will find password reset link in this letter.
-  p Good luck!
+  p Try to follow the instructions from this letter.
+  p Good luck! 
 
   //- href=`${url}` - той url, який ми передаємо в конфігу emailService

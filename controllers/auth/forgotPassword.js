@@ -17,63 +17,34 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   const otp = user.createPasswordResetToken();
 
-  await user.save();
+  await user.save(
+    {validateBeforeSave: false,}
+  );
 
   try {
     // protocol - http, https
     const resetUrl = `${req.protocol}://${req.get(
       "host"
     )}/api/auth/reset-password/${otp}`;
-    // send to the email
 
+    // send reset url to user email
     console.log("||=============>>>>>>>>>>>");
     console.log(resetUrl);
     console.log("<<<<<<<<<<<=============||");
 
-    await new Email(user, resetUrl).sendRestorePassword();
+    await new Email(user, resetUrl).sendPasswordReset();
 
     res.status(200).json({
       msg: "Password reset instruction sent to email :]",
     });
-
   } catch (error) {
-
     user.passwordResetExpires = undefined;
     user.passwordResetToken = undefined;
 
-    await user.save()
+    await user.save();
 
     return res.status(200).json({
       msg: "Password reset instructions sent to your email. :]]",
     });
   }
-  // const emailTransport = nodemailer.createTransport({
-  //   service: 'Gmail',
-  //   auth: {
-  //     user: process.env.EMAIL_USER,
-  //     pass: process.env.EMAIL_PASSWORD,
-  //   }
-  // })
-
-  // const emailTransport = nodemailer.createTransport({
-  //   host: 'sandbox.smtp.mailtrap.io',
-  //   port: 2525,
-  //   auth: {
-  //     user: process.env.EMAIL_USER,
-  //     pass: process.env.EMAIL_PASSWORD,
-  //   }
-  // })
-
-  // const emailConfig = {
-  //   from: 'Contacts App admin <admin@example.com>',
-  //   to:user.email,
-  //   subject: 'Password reset instructions',
-  //   test: resetUrl,
-  // }
-
-  // await emailTransport.sendMail(emailConfig)
-
-  // res.status(200).json({
-  //   msg: "Password reset instruction sent to email :]",
-  // });
 });

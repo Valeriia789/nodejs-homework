@@ -10,6 +10,7 @@ exports.registerUserDataValidator = (data) =>
     .keys({
       email: Joi.string().email().required(),
       password: Joi.string().regex(PASSWORD_REGEX).required(),
+      name: Joi.string().max(30),
       role: Joi.string().valid(...Object.values(userRolesEnum)),
       subscription: Joi.string().valid(...Object.values(userSubscriptionsEnum)),
       avatarURL: Joi.string(),

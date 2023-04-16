@@ -1,13 +1,17 @@
+const uuid = require("uuid").v4;
 const { catchAsync, signToken } = require("../../utils");
-// const userSubscriptionsEnum = require("../../constants/userSubscriptionsEnum");
 const User = require("../../models/userModel");
-const Email = require('../../services')
+const Email = require("../../services");
 
 exports.registerNewUser = catchAsync(async (req, res) => {
+  const verificationToken = uuid();
+  const { name, email, password } = req.body;
+
   const newUserData = {
-    ...req.body,
-    // не обов'язково тут прописувати, по дефолту і так стоїть starter
-    // subscription: userSubscriptionsEnum.STARTER,
+    name,
+    email,
+    password,
+    verificationToken,
   };
 
   const newUser = await User.create(newUserData);
@@ -16,8 +20,13 @@ exports.registerNewUser = catchAsync(async (req, res) => {
 
   const token = signToken(newUser.id);
 
+  // const verifyEmail = {
+  //   to: newUser.email, subject: 'Verify your email',
+  //   html: `<a target="_blank" href="${process.env.BASE_URL}/api/auth/verify/${verificationToken}">Click to verify</a>"`
+  // }
+
   try {
-    await new Email(newUser, 'localhost:3000/').sendHello()
+    await new Email(newUser, "localhost:3000/").sendHello();
   } catch (error) {
     console.log(error);
   }
