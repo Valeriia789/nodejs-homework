@@ -4,11 +4,13 @@ const User = require("../../models/userModel");
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!password) return next(new AppError(401, 'Not authorized'));
-  
+  if (!password) return next(new AppError(401, "Not authorized"));
+
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) return next(new AppError(401, "Email or password is wrong"));
+
+  if (!user.verify) return next(new AppError(404, "Email not verify. User not found"));
 
   const passwordIsValid = await user.checkPassword(password, user.password);
 

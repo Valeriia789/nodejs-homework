@@ -7,7 +7,7 @@ const uuid = require("uuid").v4;
 
 const { AppError } = require("../utils");
 
-class ImageService {
+module.exports = class ImageService {
   // ----------- загружаємо файл ----------------
   static upload(name) {
     const multerStorage = multer.memoryStorage();
@@ -57,4 +57,3 @@ class ImageService {
   }
 }
 
-module.exports = ImageService;

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const userSubscriptionsEnum = require("../constants/userSubscriptionsEnum");
 const userRolesEnum = require("../constants/userRolesEnum");
@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
       unique: [true, "Duplicate email"],
       trim: true,
       lowercase: true,
+    },
+    name: {
+      type: String,
     },
     // avatarURL: {
     //   type: String,
@@ -38,12 +41,19 @@ const userSchema = new mongoose.Schema(
     passwordResetToken: String,
     // passwordResetToken буде валідний певний час (10хв.):
     passwordResetExpires: Date,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
+    },
   },
   {
     timestamps: true,
   }
 );
-
 
 // pre save хук відпрацьовує в двох випадках: коли робимо кріейт і коли апдейт
 // обов'язково треба писати function, якщо написати через стрілку, не буде відпрацьовувати
@@ -67,24 +77,25 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-
 // Custom method
-userSchema.methods.checkPassword = (candidate, hash) => bcrypt.compare(candidate, hash);
-
+userSchema.methods.checkPassword = (candidate, hash) =>
+  bcrypt.compare(candidate, hash);
 
 // декларую через function, щоб мати доступ до this
-userSchema.methods.createPasswordResetToken = function() {
+userSchema.methods.createPasswordResetToken = function () {
   // crypto.randomBytes генерує рандомну стрінгу
-  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetToken = crypto.randomBytes(32).toString("hex");
 
   // токен необхідно захешувати:
-  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
 };
-
 
 const User = mongoose.model("User", userSchema);
 
